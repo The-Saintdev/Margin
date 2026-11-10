@@ -1,0 +1,282 @@
+<title>Launch Pack</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Same "Margin" ledger identity — but this is a private runbook for the seller, not a product. */
+:root{
+  --paper:#fbfaf7; --surface:#ffffff; --sunk:#f4f2ec;
+  --ink:#1b1c1e; --muted:#6a6c70; --faint:#9c9ea4;
+  --rule:#e8e5de; --rule-strong:#d7d3c9;
+  --good:#12754a; --good-soft:#e7f0ea; --bad:#b23420; --bad-soft:#f6e9e5; --warn:#8a5a12; --warn-soft:#f3ecdd;
+  --disp:"Fraunces",Georgia,serif; --ui:"Hanken Grotesk",-apple-system,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}
+*{box-sizing:border-box} html,body{margin:0} [hidden]{display:none!important} img{max-width:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--surface)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pos{color:var(--good)} .neg{color:var(--bad)} .warn{color:var(--warn)}
+h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.band{background:var(--surface);border-bottom:1px solid var(--rule)}
+.wrap{max-width:740px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+.mast{padding-block:34px 30px}
+.kicker{display:flex;align-items:baseline;gap:9px;margin-bottom:22px}
+.kicker .nm{font-family:var(--disp);font-weight:600;font-size:18px}
+.kicker .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.mast h1{font-size:clamp(30px,7vw,46px);line-height:1.04}
+.mast .lede{margin-top:16px;font-size:17px;color:var(--muted);max-width:52ch}
+
+.toc{padding:18px 0 24px;border-top:1px solid var(--rule);margin-top:22px}
+.toc ol{list-style:none;counter-reset:t;margin:0;padding:0;columns:2;column-gap:28px}
+.toc li{counter-increment:t;padding:6px 0;font-size:14px;color:var(--muted);break-inside:avoid}
+.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:var(--faint);margin-right:9px}
+
+section{padding-block:34px} section+section{border-top:1px solid var(--rule)}
+.snum{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:500}
+h2{font-size:clamp(23px,5vw,30px);margin:8px 0 14px;line-height:1.1}
+h3{font-size:16px;margin:22px 0 8px;letter-spacing:.01em}
+p{margin:0 0 15px;color:var(--ink)} p.sub{color:var(--muted)} strong{font-weight:700} em{font-style:italic}
+.pull{font-family:var(--disp);font-weight:500;font-size:clamp(19px,4.4vw,25px);line-height:1.3;color:var(--ink);margin:6px 0 18px;padding-left:18px;border-left:3px solid var(--good)}
+
+/* funnel */
+.funnel{display:grid;gap:10px;margin:8px 0 14px}
+.step{display:flex;gap:14px;align-items:center;border:1px solid var(--rule);border-radius:9px;padding:14px 16px;background:var(--surface)}
+.step .tier{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:5px;flex:none;min-width:70px;text-align:center}
+.step.free .tier{background:var(--sunk);color:var(--muted)} .step.paid .tier{background:var(--ink);color:var(--paper)}
+.step .body{min-width:0} .step .body b{font-weight:600} .step .body div{font-size:13px;color:var(--muted);margin-top:2px}
+.step .price{margin-left:auto;font-family:var(--disp);font-size:20px;font-weight:600;flex:none}
+.step .price s{color:var(--faint);font-size:14px;font-weight:400;margin-right:6px}
+
+/* copy block */
+.copy{border:1px solid var(--rule-strong);border-radius:9px;overflow:hidden;margin:10px 0 16px;background:var(--surface)}
+.copy .ch{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--sunk);border-bottom:1px solid var(--rule);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.copy .ch svg{width:13px;height:13px}
+.copy .cb{padding:15px 16px;font-size:14.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6}
+.copy .cb.mono{font-family:var(--mono);font-size:13px;white-space:pre-wrap}
+
+.tablewrap{border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden;background:var(--surface);margin:6px 0 14px}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+thead th{text-align:left;padding:10px 14px;background:var(--sunk);border-bottom:1px solid var(--rule-strong);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:14px}
+tbody tr:last-child td{border-bottom:none}
+.pf{font-weight:600;white-space:nowrap}
+.note{font-size:12.5px;color:var(--faint);line-height:1.55;margin:0 0 15px}
+
+ul.clean{list-style:none;padding:0;margin:4px 0 16px}
+ul.clean li{padding:10px 0 10px 26px;border-bottom:1px solid var(--rule);position:relative;color:var(--muted)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"";position:absolute;left:4px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--good)}
+ul.clean li b{color:var(--ink)}
+ul.bad li::before{background:var(--bad)}
+
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:6px 0 14px}
+ol.steps li{counter-increment:s;padding:12px 0 12px 42px;border-bottom:1px solid var(--rule);position:relative;color:var(--muted)}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:11px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;font-weight:600;display:grid;place-items:center}
+ol.steps li b{color:var(--ink)}
+
+.script{border:1px solid var(--rule);border-radius:9px;overflow:hidden;margin:8px 0 14px}
+.scene{display:grid;grid-template-columns:76px 1fr;border-bottom:1px solid var(--rule)}
+.scene:last-child{border-bottom:none}
+.scene .t{background:var(--sunk);padding:13px 12px;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:600;border-right:1px solid var(--rule)}
+.scene .s{padding:13px 15px;font-size:14px}
+.scene .s b{color:var(--ink)} .scene .s .vo{color:var(--ink);font-weight:600} .scene .s .do{color:var(--muted);font-size:13px;display:block;margin-top:3px}
+
+.callout{display:flex;gap:12px;align-items:flex-start;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,var(--rule));border-radius:8px;padding:15px 17px;margin:6px 0 16px;font-size:13.5px;color:var(--muted);line-height:1.55}
+.callout svg{width:19px;height:19px;color:var(--warn);flex:none;margin-top:1px}
+.callout b{color:var(--ink)}
+
+.foot{padding-block:28px 60px;font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:560px){ .toc ol{columns:1} .scene{grid-template-columns:60px 1fr} }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<div class="band"><div class="wrap">
+  <div class="mast">
+    <div class="kicker"><span class="nm">Margin</span><span class="tag">Flip Kit · Launch Pack</span></div>
+    <div class="eyebrow">Your private runbook</div>
+    <h1>Everything you need to put this on Whop and get the first sales.</h1>
+    <p class="lede">The offer, copy-paste listing text, your demo-video script, and a zero-budget plan to get buyers — written for someone who's never sold or marketed before.</p>
+    <div class="toc"><ol>
+      <li>The offer &amp; pricing</li>
+      <li>Set it up on Whop</li>
+      <li>Listing copy (paste-ready)</li>
+      <li>Your 35-second demo script</li>
+      <li>Getting buyers with $0</li>
+      <li>The "don't get banned" rules</li>
+      <li>Your first 30 days</li>
+      <li>Honest expectations</li>
+    </ol></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <section>
+    <div class="snum">01</div>
+    <h2>The offer &amp; pricing</h2>
+    <p class="sub">Two products, one funnel. The free one builds trust and gets you in front of people; the paid one is where you earn.</p>
+    <div class="funnel">
+      <div class="step free"><span class="tier">Free</span><div class="body"><b>Margin Tracker — Free</b><div>The tracker alone. Costs you nothing to give away. This is your hook and your proof.</div></div><span class="price">$0</span></div>
+      <div class="step paid"><span class="tier">Paid</span><div class="body"><b>The Reseller Profit Kit</b><div>Tracker + all 3 guides (Fees, Tax, Sourcing). Where the value — and the money — is.</div></div><span class="price"><s>$29</s>$12</span></div>
+    </div>
+    <p class="note"><b>Why $12 anchored at $29:</b> you have no reviews yet, so you're pricing the risk a stranger takes on you — keep it low to get your first sales and reviews, then raise it to $19–24 once you've got 15+ reviews. The crossed-out $29 makes $12 feel like a steal and signals the real value.</p>
+    <p class="pull">Your first 20 sales aren't for profit. They're for reviews. Reviews are what let you charge more later.</p>
+  </section>
+
+  <section>
+    <div class="snum">02</div>
+    <h2>Set it up on Whop</h2>
+    <p class="sub">Whop is free to start — it only takes a cut when you sell (~2.7% + $0.30 per sale). You'll make two products.</p>
+    <ol class="steps">
+      <li><b>Create your Whop</b> (your store) and a seller account. Pick a clean, searchable name — your storefront, not a brand nobody knows yet.</li>
+      <li><b>Make the paid product</b> — "The Reseller Profit Kit." Use Whop's <b>Files app</b> to upload the deliverables so buyers download them after paying. Set price to a one-time <b>$12</b>.</li>
+      <li><b>Make the free product</b> — "Margin Tracker (Free)." Attach just the tracker file, set price to <b>$0</b>. This is the lead magnet.</li>
+      <li><b>Write the listings</b> using the copy in section 03. Add clean screenshots of the tracker's dashboard and the fee tables — buyers need to <em>see</em> it.</li>
+      <li><b>Test as a buyer.</b> Buy your own free product, download it, confirm every file opens. A broken download is a refund and a bad review.</li>
+      <li><b>Publish and grab both links.</b> The free link is what you share everywhere; it funnels to the paid one.</li>
+    </ol>
+    <div class="callout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+      <span><b>Delivery format:</b> ship the tracker as the <code>.html</code> file (opens in any browser, no install) and the three guides as <b>PDFs</b> so they're easy to read and keep. Whop's access control gates <em>who</em> can download, but can't stop a file being copied — so your edge is the quality, the bundle, and free updates, not locking the file down. Whop's exact menus change, so follow their current Files-app prompts as you go.</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="snum">03</div>
+    <h2>Listing copy — paste-ready</h2>
+    <p class="sub">Select and copy these straight into Whop. Tweak the voice to sound like you.</p>
+
+    <h3>Product title</h3>
+    <div class="copy"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7h12M8 12h12M8 17h8M4 7h.01M4 12h.01M4 17h.01"/></svg>Title</div><div class="cb">The Reseller Profit Kit — Know Your Real Profit &amp; Keep More at Tax Time</div></div>
+
+    <h3>Short description / subtitle</h3>
+    <div class="copy"><div class="ch">Subtitle</div><div class="cb">The tracker + playbooks that show flippers their true profit after fees — and the write-offs most resellers overpay by missing. Tracker runs in any browser. No subscription.</div></div>
+
+    <h3>Full description</h3>
+    <div class="copy"><div class="ch">Description</div><div class="cb">Think you made $72 on that flip? After eBay's cut, shipping, and the fees you forgot — you probably kept half that.
+
+Most resellers have no idea what they actually make. They mix up revenue with profit, lose track of fees, and overpay on taxes because they never tracked their costs.
+
+The Reseller Profit Kit fixes that. It's a clean profit tracker plus three no-fluff playbooks built for flippers on eBay, StockX, Depop, Poshmark, Mercari, Grailed and more.
+
+WHAT'S INSIDE
+• Margin Tracker — log a buy, mark it sold, and it auto-deducts the real platform fee so you see true profit, ROI, and days-to-sell. Tracks expenses + mileage and exports a tax-ready CSV. Runs in any browser, saves on your device, no account.
+• Guide 01 — Fee &amp; Margin Playbook: what every platform actually takes in 2026, and a rule so you never buy a loser.
+• Guide 02 — Reseller Tax &amp; Deductions: every write-off you're allowed, how COGS and the 1099-K really work, in plain English.
+• Guide 03 — Sourcing Playbook: what's profitable, where to source it, and the 30-second check before you buy.
+
+WHY IT PAYS FOR ITSELF
+One tracked tax deduction or one avoided bad flip covers the price many times over.
+
+• One-time payment — no subscription
+• Free lifetime updates
+• Works on phone or computer
+
+(The tracker is a personal tool; the guides are general education, not financial or tax advice.)</div></div>
+
+    <h3>FAQ</h3>
+    <div class="copy"><div class="ch">FAQ</div><div class="cb">Is this a subscription? No — pay once, yours forever, including updates.
+
+Do I need special software? No. The tracker opens in any web browser. Guides are PDFs.
+
+Where does my data go? Nowhere. The tracker saves only on your device — nothing is uploaded.
+
+Is the tax guide financial advice? No. It's plain-English education to help you understand deductions. Confirm specifics with a tax pro.
+
+Can I use it on my phone? Yes — the tracker works on phone or computer.</div></div>
+  </section>
+
+  <section>
+    <div class="snum">04</div>
+    <h2>Your 35-second demo script</h2>
+    <p class="sub">Screen-record the tracker on your phone or laptop while you talk. This one clip is your main marketing asset — post it everywhere. Keep it fast and real.</p>
+    <div class="script">
+      <div class="scene"><div class="t">0:00–0:04<br>HOOK</div><div class="s"><span class="vo">"You think you made seventy bucks on this flip. Watch what you actually made."</span><span class="do">Show a sold item in the tracker.</span></div></div>
+      <div class="scene"><div class="t">0:04–0:12<br>PROBLEM</div><div class="s"><span class="vo">"Add what you paid, hit sold, pick the platform…"</span><span class="do">Add an item, mark it sold, select eBay — fee auto-fills, real profit appears.</span></div></div>
+      <div class="scene"><div class="t">0:12–0:20<br>REVEAL</div><div class="s"><span class="vo">"Thirty-six. Not seventy. The fees ate half — and now you can see it."</span><span class="do">Point at the real-profit number vs what they expected.</span></div></div>
+      <div class="scene"><div class="t">0:20–0:28<br>DEPTH</div><div class="s"><span class="vo">"It tracks every platform's real fees, your ROI, even mileage for taxes — and exports it all come tax time."</span><span class="do">Flash the dashboard + expenses tab + export.</span></div></div>
+      <div class="scene"><div class="t">0:28–0:35<br>CTA</div><div class="s"><span class="vo">"The tracker's free — link in my bio. Grab it."</span><span class="do">Show the Whop free link / your handle.</span></div></div>
+    </div>
+    <p class="note"><b>Make 5–10 variations.</b> Different hooks ("Here's why your eBay profit is a lie," "POV: you finally know your real numbers"), different items. One will outperform the rest — then make more like it. Post natively to each platform (don't just cross-link).</p>
+  </section>
+
+  <section>
+    <div class="snum">05</div>
+    <h2>Getting buyers with $0</h2>
+    <p class="sub">You can't buy ads and you've never marketed. Fine — none of the channels below cost money. The whole game: <strong>give the free tracker genuinely, let it earn trust, and let trust sell the Kit.</strong></p>
+
+    <h3>Channels you fully control (start here)</h3>
+    <ul class="clean">
+      <li><b>TikTok / YouTube Shorts / Instagram Reels.</b> Post your demo clips + short "how much eBay really takes" value videos. You own the posting, so no spam rules — this is your best no-audience start. Link the free tracker in bio.</li>
+      <li><b>Pinterest.</b> Resellers search it constantly. Pin clean screenshots of the fee tables and the tracker dashboard → link to the free product. Pins keep working for months.</li>
+      <li><b>Whop Marketplace / Discover.</b> A clear, keyword-rich title ("Reseller Profit Tracker &amp; Fee Guide") helps Whop's own search surface you. Free traffic once you're listed.</li>
+    </ul>
+
+    <h3>Communities (value first, never spam)</h3>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Where</th><th>How to show up</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">r/Flipping<br>r/Resell · r/Ebay</td><td>Answer fee/tax/profit questions genuinely. When it truly helps, "I actually built a free tracker for this — happy to drop it." Build karma first; most link posts get removed.</td></tr>
+        <tr><td class="pf">Discord<br>(Flipping Biz Hub, Deal Soldier)</td><td>Be a helpful regular. Share the free tool in context, not as a drive-by. Relationships convert; spam gets you kicked.</td></tr>
+        <tr><td class="pf">Facebook reseller groups</td><td>Same rule — answer questions, post the occasional genuinely useful screenshot, offer the free tracker to people who'd clearly use it.</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note"><b>The one move that works everywhere:</b> lead with the <em>free</em> tracker. It's not a pitch, it's a gift — people try it, trust you, and a chunk of them buy the full Kit. Never open with the paid link.</p>
+  </section>
+
+  <section>
+    <div class="snum">06</div>
+    <h2>The "don't get banned" rules</h2>
+    <p class="sub">Communities are the fastest free traffic — and the fastest way to get yourself banned if you treat them like billboards. Follow these:</p>
+    <ul class="clean bad">
+      <li><b>Never drop a paid link cold.</b> Read each community's self-promo rules first — many ban it outright.</li>
+      <li><b>Give 10× more than you ask.</b> Answer dozens of questions for every soft mention of your tool.</li>
+      <li><b>Lead with free, always.</b> The free tracker is welcome where a sales link gets removed.</li>
+      <li><b>Be a real member,</b> not an account that only posts links. Mods can tell instantly.</li>
+      <li><b>Don't copy-paste the same message everywhere.</b> It reads as spam and gets flagged.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="snum">07</div>
+    <h2>Your first 30 days</h2>
+    <ol class="steps">
+      <li><b>Days 1–3:</b> Export the guides to PDF, set up both Whop products, test the downloads as a buyer.</li>
+      <li><b>Days 3–5:</b> Record 5–10 demo clips. Take clean screenshots for the listing and Pinterest.</li>
+      <li><b>Week 1:</b> Post your first clips on TikTok/Shorts/Reels. Set up Pinterest pins. Make your Whop title searchable.</li>
+      <li><b>Week 2:</b> Join the communities. Just help — no links yet. Build a little trust and karma.</li>
+      <li><b>Week 3:</b> Keep posting clips (double down on whatever got views). Start sharing the free tracker where it genuinely helps.</li>
+      <li><b>Week 4:</b> Ask every happy free user for a review. Reviews are the unlock — once you have a handful, raise the Kit toward $19.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="snum">08</div>
+    <h2>Honest expectations</h2>
+    <p>First sales are slow — that's normal, not failure. With no audience, your first week might be a handful of free downloads and zero paid sales. That's fine. The free tracker is seeding trust that pays off over weeks, not hours.</p>
+    <p class="pull">Consistency beats everything. The person who posts a clip a day for a month wins over the one who posts ten in a day and quits.</p>
+    <ul class="clean">
+      <li><b>Win #1:</b> first free downloads → people are finding you.</li>
+      <li><b>Win #2:</b> first paid sale → the offer works.</li>
+      <li><b>Win #3:</b> first review → now you can raise the price and compound.</li>
+    </ul>
+    <p class="note">Keep improving the product from real feedback, keep posting, keep helping. A small, genuinely useful product that people vouch for beats a flashy one nobody trusts. You've already built the hard part — now it's reps.</p>
+  </section>
+
+  <div class="foot">
+    MARGIN · FLIP KIT — LAUNCH PACK (PRIVATE)<br>
+    Your runbook · Whop fees &amp; community rules change — confirm current details before you rely on them.
+  </div>
+</div>

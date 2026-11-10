@@ -1,0 +1,484 @@
+<title>Fee &amp; Margin Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Same "Margin" ledger identity as the tracker: Fraunces headline, mono figures,
+   hairline rules, green/red only on money. A reading document, not a dashboard. */
+:root{
+  --paper:#fbfaf7; --surface:#ffffff; --sunk:#f4f2ec;
+  --ink:#1b1c1e; --muted:#6a6c70; --faint:#9c9ea4;
+  --rule:#e8e5de; --rule-strong:#d7d3c9;
+  --good:#12754a; --good-soft:#e7f0ea; --bad:#b23420; --bad-soft:#f6e9e5; --warn:#8a5a12; --warn-soft:#f3ecdd;
+  --disp:"Fraunces",Georgia,serif; --ui:"Hanken Grotesk",-apple-system,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--surface)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.pos{color:var(--good)} .neg{color:var(--bad)} .warn{color:var(--warn)}
+h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+.band{background:var(--surface);border-bottom:1px solid var(--rule)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+.mast{padding-block:34px 30px}
+.kicker{display:flex;align-items:baseline;gap:9px;margin-bottom:22px}
+.kicker .nm{font-family:var(--disp);font-weight:600;font-size:18px}
+.kicker .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.mast h1{font-size:clamp(32px,7.5vw,50px);line-height:1.02}
+.mast .lede{margin-top:16px;font-size:17px;color:var(--muted);max-width:52ch}
+.mast .meta{margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap}
+
+.toc{padding:18px 0 24px;border-top:1px solid var(--rule)}
+.toc ol{list-style:none;counter-reset:t;margin:0;padding:0;columns:2;column-gap:28px}
+.toc li{counter-increment:t;padding:6px 0;font-size:14px;color:var(--muted);break-inside:avoid}
+.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:var(--faint);margin-right:9px}
+
+section{padding-block:34px}
+section+section{border-top:1px solid var(--rule)}
+.snum{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:500}
+h2{font-size:clamp(23px,5vw,30px);margin:8px 0 14px;line-height:1.1}
+h3{font-size:17px;margin:20px 0 8px}
+p{margin:0 0 15px;color:var(--ink)} p.sub{color:var(--muted)} strong{font-weight:700} em{font-style:italic}
+.pull{font-family:var(--disp);font-weight:500;font-size:clamp(20px,4.6vw,27px);line-height:1.3;color:var(--ink);margin:6px 0 18px;padding-left:18px;border-left:3px solid var(--good)}
+
+.tablewrap{border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden;background:var(--surface);margin:6px 0 14px}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+thead th{text-align:left;padding:11px 14px;background:var(--sunk);border-bottom:1px solid var(--rule-strong);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;white-space:nowrap}
+th.r,td.r{text-align:right}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:middle;font-size:14.5px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--sunk)}
+.pf{font-weight:600}
+td.r{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13.5px}
+.keep{font-weight:700}
+.note{font-size:12.5px;color:var(--faint);line-height:1.55;margin:0 0 15px}
+.caption{font-size:12.5px;color:var(--faint);margin:0 0 8px}
+
+.ex{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:10px 0 14px}
+.excard{border:1px solid var(--rule);border-radius:8px;padding:15px;background:var(--surface)}
+.excard .pl{font-weight:700;font-size:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.excard .big{font-family:var(--disp);font-weight:600;font-size:27px;letter-spacing:-.01em}
+.excard .ln{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:2px 0;font-family:var(--mono)}
+.excard .verdict{margin-top:9px;padding-top:9px;border-top:1px solid var(--rule);font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+
+.formula{background:var(--sunk);border:1px solid var(--rule);border-radius:8px;padding:20px 22px;margin:8px 0 16px}
+.formula .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:10px}
+.formula .eq{font-family:var(--mono);font-size:clamp(15px,3.6vw,19px);line-height:1.6;color:var(--ink)}
+.formula .eq b{color:var(--good);font-weight:700}
+
+.mult{display:grid;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:6px 0 14px}
+.mult .row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--rule);background:var(--surface);gap:12px}
+.mult .row:last-child{border-bottom:none}
+.mult .row:hover{background:var(--sunk)}
+.mult .cat{font-weight:600;font-size:14.5px}
+.mult .cat small{display:block;color:var(--faint);font-weight:400;font-size:12px}
+.mult .pick{font-family:var(--mono);font-size:13.5px;color:var(--good);font-weight:600;text-align:right;flex:none}
+
+.profile{border:1px solid var(--rule);border-radius:9px;background:var(--surface);padding:18px 20px;margin:0 0 12px}
+.profile .ph{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px;flex-wrap:wrap}
+.profile .pn{font-family:var(--disp);font-weight:600;font-size:19px}
+.profile .pfee{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
+.profile .best{font-size:12px;color:var(--faint);margin-bottom:12px}
+.profile .best b{color:var(--ink)}
+.profile .lines{display:grid;gap:7px}
+.profile .pl-row{display:flex;gap:9px;font-size:13.5px;align-items:flex-start}
+.profile .tagx{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;flex:none;margin-top:1px;min-width:52px;text-align:center}
+.tagx.win{background:var(--good-soft);color:var(--good)}
+.tagx.watch{background:var(--warn-soft);color:var(--warn)}
+.profile .pl-row span{color:var(--muted)}
+
+ul.clean{list-style:none;padding:0;margin:4px 0 16px}
+ul.clean li{padding:9px 0 9px 26px;border-bottom:1px solid var(--rule);position:relative;color:var(--muted)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"";position:absolute;left:4px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--good)}
+ul.clean li b{color:var(--ink)}
+
+/* P&L statement block */
+.pnl{border:1px solid var(--rule-strong);border-radius:9px;overflow:hidden;background:var(--surface);margin:8px 0 14px}
+.pnl .prow{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--rule);font-size:14.5px}
+.pnl .prow .lab{color:var(--muted)} .pnl .prow .lab b{color:var(--ink);font-weight:600}
+.pnl .prow .amt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+.pnl .prow.head{background:var(--sunk);font-weight:700}
+.pnl .prow.head .amt{font-weight:700}
+.pnl .prow.net{background:var(--good-soft);border-bottom:none;padding:16px 18px}
+.pnl .prow.net .lab{font-family:var(--disp);font-size:17px;font-weight:600;color:var(--ink)}
+.pnl .prow.net .amt{font-family:var(--disp);font-size:22px;font-weight:600;color:var(--good)}
+
+.disclaim{background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 28%,var(--rule));border-radius:8px;padding:16px 18px;font-size:13.5px;color:var(--muted);line-height:1.6}
+.disclaim b{color:var(--ink)}
+.foot{padding-block:28px 60px;font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.8}
+
+@media(max-width:560px){ .ex{grid-template-columns:1fr} .toc ol{columns:1} }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<div class="band"><div class="wrap">
+  <div class="mast">
+    <div class="kicker"><span class="nm">Margin</span><span class="tag">Flip Kit · Guide 01</span></div>
+    <div class="eyebrow">The Fee &amp; Margin Playbook</div>
+    <h1>What the marketplace actually takes — and how to price so you never lose.</h1>
+    <p class="lede">Every platform quotes one fee and charges another. This is what you really keep per sale in 2026, platform by platform, the hidden costs nobody warns you about, when the money actually lands, and the rule that keeps you from flipping at a loss.</p>
+    <div class="meta"><span>Updated Nov 2026</span><span>US sellers</span><span>~20 min read</span></div>
+    <div class="toc"><ol>
+      <li>Your profit is a lie</li>
+      <li>What you keep on a $50 sale</li>
+      <li>How fees scale with price</li>
+      <li>The full fee matrix</li>
+      <li>The same hoodie, three platforms</li>
+      <li>Platform-by-platform breakdown</li>
+      <li>The hidden costs that eat you</li>
+      <li>When you actually get paid</li>
+      <li>When your fees drop with volume</li>
+      <li>The rule that stops a loss</li>
+      <li>Break-even multipliers</li>
+      <li>A real month, fully costed</li>
+      <li>Where to list what</li>
+      <li>Sales tax: what you actually pay</li>
+      <li>Margin rules to live by</li>
+    </ol></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <section>
+    <div class="snum">01</div>
+    <h2>Your profit is a lie (until you subtract fees)</h2>
+    <p>You buy a hoodie for <span class="mono">$168</span>, sell it for <span class="mono">$240</span>, and tell yourself you made <span class="mono">$72</span>. You didn't. After the platform's cut, payment processing, and the label you paid for, your real take-home is closer to <span class="mono pos">$45</span> — and if you listed it on the wrong platform, under <span class="mono neg">$10</span>.</p>
+    <p class="pull">The sellers who last aren't the ones with the best eye. They're the ones who know their real number before they buy.</p>
+    <p class="sub">Fees moved a lot in the last two years — Mercari shifted its cut back to sellers, Depop and Vinted dropped seller fees, Whatnot layered commission on top of processing. Most "fee guides" online still quote 2022 numbers. Here's where it actually stands, and how to price around it.</p>
+  </section>
+
+  <section>
+    <div class="snum">02</div>
+    <h2>What you keep on a $50 sale</h2>
+    <p class="caption">All-in seller cost including payment processing, on a $50 item. Rounded; confirm current rates on each platform's fee page before you price.</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Platform</th><th>Seller cut</th><th class="r">Fee on $50</th><th class="r">You keep</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Vinted</td><td>0% seller fee</td><td class="r neg">−$0.00</td><td class="r keep pos">$50.00</td></tr>
+        <tr><td class="pf">Depop</td><td>~3.3% + $0.45 processing</td><td class="r neg">−$2.10</td><td class="r keep">$47.90</td></tr>
+        <tr><td class="pf">Mercari</td><td>10% commission</td><td class="r neg">−$5.00</td><td class="r keep">$45.00</td></tr>
+        <tr><td class="pf">Etsy</td><td>~9.5% + $0.45</td><td class="r neg">−$5.20</td><td class="r keep">$44.80</td></tr>
+        <tr><td class="pf">Whatnot</td><td>~8% + 2.9% + $0.30</td><td class="r neg">−$5.75</td><td class="r keep">$44.25</td></tr>
+        <tr><td class="pf">StockX</td><td>~9% + 3% (tiered)</td><td class="r neg">−$6.00</td><td class="r keep">$44.00</td></tr>
+        <tr><td class="pf">Grailed</td><td>~9% + 3.5% + $0.49</td><td class="r neg">−$6.75</td><td class="r keep">$43.25</td></tr>
+        <tr><td class="pf">eBay</td><td>~13.6% + $0.40</td><td class="r neg">−$7.20</td><td class="r keep">$42.80</td></tr>
+        <tr><td class="pf">Amazon</td><td>~15% referral</td><td class="r neg">−$7.50</td><td class="r keep">$42.50</td></tr>
+        <tr><td class="pf">GOAT</td><td>~9.5% + $5 flat</td><td class="r neg">−$9.75</td><td class="r keep">$40.25</td></tr>
+        <tr><td class="pf">Poshmark</td><td>20% (≥$15)</td><td class="r neg">−$10.00</td><td class="r keep neg">$40.00</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note"><b>Read it right:</b> flat fees (eBay's $0.40, GOAT's $5) barely register on expensive items but gut cheap ones. A % fee hurts the same at every price. That difference is the whole game — see the next two sections.</p>
+  </section>
+
+  <section>
+    <div class="snum">03</div>
+    <h2>How fees scale with price</h2>
+    <p class="sub">The <em>effective</em> fee rate changes with price because of flat fees. The same platform can be your cheapest option on a $500 item and your most expensive on a $15 one. This is why "what's the cheapest platform?" has no single answer.</p>
+    <p class="caption">Effective all-in fee as a % of sale price, at four price points.</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Platform</th><th class="r">$15 item</th><th class="r">$50 item</th><th class="r">$150 item</th><th class="r">$500 item</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Poshmark</td><td class="r">$2.95 flat</td><td class="r">20.0%</td><td class="r">20.0%</td><td class="r">20.0%</td></tr>
+        <tr><td class="pf">eBay</td><td class="r neg">16.3%</td><td class="r">14.4%</td><td class="r">13.9%</td><td class="r pos">13.7%</td></tr>
+        <tr><td class="pf">Depop</td><td class="r">6.3%</td><td class="r pos">4.2%</td><td class="r pos">3.6%</td><td class="r pos">3.4%</td></tr>
+        <tr><td class="pf">GOAT</td><td class="r neg">42.8%</td><td class="r neg">19.5%</td><td class="r">12.8%</td><td class="r">10.5%</td></tr>
+        <tr><td class="pf">Whatnot</td><td class="r">13.0%</td><td class="r">11.5%</td><td class="r">11.1%</td><td class="r">10.9%</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note"><b>The lesson:</b> never sell a cheap item somewhere with a big flat fee — GOAT takes <strong>43%</strong> of a $15 sale. And Poshmark's flat $2.95 under $15 (the 20% only kicks in at $15+) actually makes it one of the <em>best</em> places for sub-$15 items. Match the platform to the price, not just the category.</p>
+  </section>
+
+  <section>
+    <div class="snum">04</div>
+    <h2>The full fee matrix</h2>
+    <p class="sub">Keep this one bookmarked. It's exactly what lands in your pocket — after all fees and processing — at four price points, every major platform. Before you list anything, glance at the column for its price.</p>
+    <p class="caption">Dollars you keep after all-in fees. Shipping not included. Rounded estimates, US, Nov 2026.</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Platform</th><th class="r">Keep on $15</th><th class="r">on $50</th><th class="r">on $150</th><th class="r">on $500</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Vinted</td><td class="r pos">$15.00</td><td class="r pos">$50.00</td><td class="r pos">$150.00</td><td class="r pos">$500.00</td></tr>
+        <tr><td class="pf">Depop</td><td class="r">$14.06</td><td class="r">$47.90</td><td class="r">$144.60</td><td class="r">$483.05</td></tr>
+        <tr><td class="pf">Mercari</td><td class="r">$13.50</td><td class="r">$45.00</td><td class="r">$135.00</td><td class="r">$450.00</td></tr>
+        <tr><td class="pf">Etsy</td><td class="r">$13.13</td><td class="r">$44.80</td><td class="r">$135.30</td><td class="r">$452.05</td></tr>
+        <tr><td class="pf">Whatnot</td><td class="r">$13.07</td><td class="r">$44.25</td><td class="r">$133.35</td><td class="r">$445.20</td></tr>
+        <tr><td class="pf">StockX</td><td class="r">$13.20</td><td class="r">$44.00</td><td class="r">$132.00</td><td class="r">$440.00</td></tr>
+        <tr><td class="pf">Grailed</td><td class="r">$12.64</td><td class="r">$43.26</td><td class="r">$130.77</td><td class="r">$437.06</td></tr>
+        <tr><td class="pf">eBay</td><td class="r">$12.56</td><td class="r">$42.80</td><td class="r">$129.20</td><td class="r">$431.60</td></tr>
+        <tr><td class="pf">Amazon</td><td class="r">$12.75</td><td class="r">$42.50</td><td class="r">$127.50</td><td class="r">$425.00</td></tr>
+        <tr><td class="pf">Poshmark</td><td class="r">$12.05</td><td class="r">$40.00</td><td class="r">$120.00</td><td class="r">$400.00</td></tr>
+        <tr><td class="pf">GOAT</td><td class="r neg">$8.58</td><td class="r">$40.25</td><td class="r">$130.75</td><td class="r">$447.50</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note">Notice how the ranking <em>reshuffles</em> across columns. GOAT is dead last on a $15 item and near the top on a $500 one. Poshmark is fine when small, punishing when big. There is no single "best platform" — only the best platform <em>for this item at this price.</em></p>
+  </section>
+
+  <section>
+    <div class="snum">05</div>
+    <h2>The same hoodie, three platforms</h2>
+    <p class="sub">A $168 Supreme hoodie, sold for $240, $14 shipping label you cover. Where you list it swings your profit by <strong>4×</strong>.</p>
+    <div class="ex">
+      <div class="excard">
+        <div class="pl">Grailed <span class="mono pos" style="font-size:13px">best</span></div>
+        <div class="big pos">$44.80</div>
+        <div style="margin-top:10px">
+          <div class="ln"><span>Sold</span><span>$240.00</span></div>
+          <div class="ln"><span>Fees</span><span class="neg">−$13.20</span></div>
+          <div class="ln"><span>Shipping</span><span class="neg">−$14.00</span></div>
+          <div class="ln"><span>Cost</span><span class="neg">−$168.00</span></div>
+        </div>
+        <div class="verdict pos">+27% ROI</div>
+      </div>
+      <div class="excard">
+        <div class="pl">eBay</div>
+        <div class="big">$39.08</div>
+        <div style="margin-top:10px">
+          <div class="ln"><span>Sold</span><span>$240.00</span></div>
+          <div class="ln"><span>Fees</span><span class="neg">−$18.92</span></div>
+          <div class="ln"><span>Shipping</span><span class="neg">−$14.00</span></div>
+          <div class="ln"><span>Cost</span><span class="neg">−$168.00</span></div>
+        </div>
+        <div class="verdict">+23% ROI</div>
+      </div>
+      <div class="excard">
+        <div class="pl">Poshmark <span class="mono neg" style="font-size:13px">worst</span></div>
+        <div class="big neg">$10.00</div>
+        <div style="margin-top:10px">
+          <div class="ln"><span>Sold</span><span>$240.00</span></div>
+          <div class="ln"><span>Fees</span><span class="neg">−$48.00</span></div>
+          <div class="ln"><span>Shipping</span><span>$0.00*</span></div>
+          <div class="ln"><span>Cost</span><span class="neg">−$168.00</span></div>
+        </div>
+        <div class="verdict neg">+6% ROI</div>
+      </div>
+    </div>
+    <p class="note">*Poshmark buyers pay shipping, which softens the 20% a little — but on a high-ticket item the cut still wrecks you. Same work, same product, <strong>$34.80 more profit</strong> just from listing in the right place.</p>
+  </section>
+
+  <section>
+    <div class="snum">06</div>
+    <h2>Platform-by-platform: the real deal</h2>
+    <p class="sub">Fees are only half the story. Each platform has a quirk that costs or saves you money. Here's what matters per place.</p>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">eBay</span><span class="pfee">~13.6% + $0.40 / order</span></div>
+      <div class="best">Best for: <b>almost anything</b> — biggest buyer base, electronics, cards, sneakers, tickets.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx watch">watch</span><span><b>Promoted Listings</b> are optional ads that take an extra 2–20%+ on top of fees. Easy to leave on by accident.</span></div>
+        <div class="pl-row"><span class="tagx win">good</span><span>On a refund, eBay returns the <b>percentage</b> fee but keeps the $0.40. A Store subscription lowers your rate if you sell volume.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Poshmark</span><span class="pfee">$2.95 under $15 · 20% at $15+</span></div>
+      <div class="best">Best for: <b>women's clothing, shoes, accessories</b> under ~$40, and cheap items.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Buyer pays shipping, and the flat $2.95 under $15 beats everyone on cheap items.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>That 20% is savage on anything over ~$50. "Offer to Likers" discounts (and shared shipping) cut your margin further.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Mercari</span><span class="pfee">10% commission</span></div>
+      <div class="best">Best for: <b>general used goods, home, electronics, toys</b> — volume, not luxury.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Flat 10%, no listing fees, payment processing now sits on the buyer's side.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>"Promote" and Smart Offers quietly auto-discount your item to buyers who liked it — you eat that.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Depop &amp; Vinted</span><span class="pfee">~0% seller fee</span></div>
+      <div class="best">Best for: <b>Gen-Z fashion, vintage, streetwear, cheap clothing volume.</b></div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Lowest seller costs anywhere — both dropped seller fees (buyers now pay). Depop still charges ~3.3% processing.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>Buyer-paid fees make your listing look pricier at checkout, which can slow sales. Depop "Boosted" listings cost ~8–12%.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">StockX &amp; GOAT</span><span class="pfee">~9–15% all-in (tiered)</span></div>
+      <div class="best">Best for: <b>deadstock sneakers, hype, sealed goods</b> — authentication builds buyer trust.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Buyers trust the authentication, so they pay more. Your fee % drops as you hit higher seller levels.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>You ship to them first (adds days + a label), payouts can hold, and GOAT's flat fees murder cheap pairs.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Grailed</span><span class="pfee">~9% + 3.5% + $0.49</span></div>
+      <div class="best">Best for: <b>men's designer, archive, streetwear</b> — a buyer base that knows the brands.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Low fees + the right audience = top net on designer pieces. Cheaper than eBay for the same item.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>Smaller audience and slower sales than eBay — you trade speed for margin.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Whatnot</span><span class="pfee">~8% + 2.9% + $0.30</span></div>
+      <div class="best">Best for: <b>trading cards, collectibles, toys</b> sold live.</div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Live auctions create urgency and often push prices above "market" — fees pay for themselves.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>You have to actually go live and host. It's a performance, not a passive listing.</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="ph"><span class="pn">Facebook / Local</span><span class="pfee">Free (local, cash)</span></div>
+      <div class="best">Best for: <b>furniture, electronics, big-ticket, bulky items.</b></div>
+      <div class="lines">
+        <div class="pl-row"><span class="tagx win">good</span><span>Zero fees on local cash deals — keep 100%. Unbeatable on a $700 console or a couch.</span></div>
+        <div class="pl-row"><span class="tagx watch">watch</span><span>No buyer protection, no-shows, lowballers, and meet-up hassle. Shipped FB orders do carry a ~5% fee.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="snum">07</div>
+    <h2>The hidden costs that quietly eat you</h2>
+    <p class="sub">Fees are the obvious cut. These are the ones that don't show up in the headline rate but show up in your bank account.</p>
+    <ul class="clean">
+      <li><b>Promoted / boosted listings.</b> eBay Promoted, Depop Boost, Poshmark &amp; Mercari promote — all take an <em>extra</em> cut on top of fees, often 2–12%+. Turn them on deliberately, not by default.</li>
+      <li><b>Shipping you eat.</b> A $9 label on a $35 item is 26% gone before any fee. Know for each platform whether you or the buyer pays, and price accordingly.</li>
+      <li><b>Returns &amp; refunds.</b> Some platforms refund your fees on a return, some don't. You may also eat return shipping and get an item back in worse condition. Build a small return rate into your pricing.</li>
+      <li><b>Offers &amp; coupons.</b> "Accept offer," "offer to likers," auto-coupons — every one is a discount off <em>your</em> margin, not the platform's.</li>
+      <li><b>Crosslisting tools &amp; supplies.</b> Apps like Vendoo or List Perfectly run $10–40/mo. Poly mailers, boxes, tape, thermal labels, ink — all real costs. All deductible (see Guide 02).</li>
+    </ul>
+    <p class="note">Every one of these is a line you should be logging in the tracker. Untracked costs don't just hurt your margin — they become income you pay tax on.</p>
+  </section>
+
+  <section>
+    <div class="snum">08</div>
+    <h2>When you actually get paid</h2>
+    <p class="sub">Margin isn't the only thing that matters — so does <em>cash flow.</em> If your money is locked up for two weeks, you can't buy the next flip. Here's roughly when funds free up and reach your bank.</p>
+    <p class="caption">Typical timing. New accounts, disputes, and high-value items hold longer.</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Platform</th><th>Funds release</th><th>To your bank</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Facebook / Local</td><td>Instantly (cash in hand)</td><td class="r">Same day</td></tr>
+        <tr><td class="pf">Depop / Vinted</td><td>Around when buyer confirms</td><td class="r">1–3 days</td></tr>
+        <tr><td class="pf">eBay</td><td>~1–2 days after delivery*</td><td class="r">1–3 days</td></tr>
+        <tr><td class="pf">Poshmark</td><td>After delivery + accept (or 3 days)</td><td class="r">1–3 days</td></tr>
+        <tr><td class="pf">Mercari</td><td>After buyer rates / 3 days post-delivery</td><td class="r">~5 days</td></tr>
+        <tr><td class="pf">Whatnot</td><td>After delivery confirmed</td><td class="r">1–5 days</td></tr>
+        <tr><td class="pf">StockX / GOAT</td><td>After it ships in + passes authentication</td><td class="r neg">5–12+ days</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note">*New eBay sellers can have payouts held up to <strong>21 days</strong> until they build a track record. If you're reinvesting fast, lean on the quick-paying platforms and keep a small cash buffer so a hold never stops you from buying.</p>
+  </section>
+
+  <section>
+    <div class="snum">09</div>
+    <h2>When your fees drop with volume</h2>
+    <p>The headline rates aren't fixed forever. As you scale, some platforms quietly get cheaper — and knowing the break points keeps you from overpaying.</p>
+    <ul class="clean">
+      <li><b>eBay Store subscription.</b> Once you're listing steadily (roughly 50+ items/month), a Store plan ($4.99–$59.95/mo) cuts your final value fee and hands you hundreds of free listings. Past a certain volume it pays for itself several times over.</li>
+      <li><b>StockX &amp; GOAT seller levels.</b> Both lower your transaction % as your lifetime sales climb. A brand-new StockX seller pays the top rate; a high-volume one pays noticeably less on every sale.</li>
+      <li><b>Flat 10–20% platforms (Mercari, Poshmark).</b> No real volume discount — the rate is the rate. Scale here comes from speed and quantity, not cheaper fees.</li>
+    </ul>
+    <p class="note">The takeaway: if one platform is becoming your main channel, check whether a subscription or seller tier would lower your rate before you do another month at full price.</p>
+  </section>
+
+  <section>
+    <div class="snum">10</div>
+    <h2>The rule that stops you selling at a loss</h2>
+    <p>Before you buy anything to flip, run this. It gives you the <strong>lowest price you can accept</strong> and still hit your target profit — so you never get talked down into a bad deal.</p>
+    <div class="formula">
+      <div class="lbl">Minimum list price</div>
+      <div class="eq">( <b>your cost</b> + shipping + target profit ) ÷ ( 1 − fee% )</div>
+    </div>
+    <p class="sub">Example: a sneaker cost you $65, $8 to ship, you want at least $25 profit, selling on eBay (≈14% all-in). Minimum = ($65 + $8 + $25) ÷ 0.86 = <span class="mono">$114</span>. List below that and you're working for free.</p>
+    <p class="note"><b>Faster rule of thumb:</b> on a 10–14% fee platform you keep roughly <strong>85¢ of every dollar</strong>, so to cover cost you need to sell for at least <strong>cost ÷ 0.85</strong> — and that's just break-even, before a cent of profit.</p>
+  </section>
+
+  <section>
+    <div class="snum">11</div>
+    <h2>Break-even multipliers</h2>
+    <p class="sub">The fast version of the formula. To actually <strong>pocket 50% of your cost as profit</strong> after fees, sell at roughly this multiple of what you paid. (Shipping not included — add it on top.)</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Platform</th><th class="r">Just break even</th><th class="r">Pocket 50% profit</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Vinted / Depop</td><td class="r">1.05×</td><td class="r pos">1.6×</td></tr>
+        <tr><td class="pf">Mercari / Grailed</td><td class="r">1.15×</td><td class="r">1.7×</td></tr>
+        <tr><td class="pf">eBay / Amazon</td><td class="r">1.18×</td><td class="r">1.8×</td></tr>
+        <tr><td class="pf">Poshmark</td><td class="r neg">1.25×</td><td class="r neg">1.9×</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note"><b>In plain words:</b> on eBay, a $50 pickup needs to sell for about <span class="mono">$90</span> to clear 50% profit after fees. On Poshmark, closer to <span class="mono">$95</span>. If you can't realistically sell it for that, it's not a flip — it's a donation.</p>
+  </section>
+
+  <section>
+    <div class="snum">12</div>
+    <h2>A real month, fully costed</h2>
+    <p class="sub">Here's why "I did $2,000 in sales" and "I made $2,000" are completely different sentences. A part-time reseller moving $2,000 of product in a month, costed honestly:</p>
+    <div class="pnl">
+      <div class="prow head"><span class="lab">Gross sales</span><span class="amt">$2,000.00</span></div>
+      <div class="prow"><span class="lab">Cost of the items sold (COGS)</span><span class="amt neg">−$900.00</span></div>
+      <div class="prow"><span class="lab">Platform fees <b>(~13% blended)</b></span><span class="amt neg">−$260.00</span></div>
+      <div class="prow"><span class="lab">Shipping labels you covered</span><span class="amt neg">−$150.00</span></div>
+      <div class="prow"><span class="lab">Mailers, boxes, tape, labels</span><span class="amt neg">−$45.00</span></div>
+      <div class="prow"><span class="lab">Crosslisting app</span><span class="amt neg">−$20.00</span></div>
+      <div class="prow net"><span class="lab">Real take-home profit</span><span class="amt">$625.00</span></div>
+    </div>
+    <p class="note">$2,000 of sales → <strong>about $625</strong> actually kept. That's a healthy ~31% margin — but only if you tracked all of it. Miss the $215 in fees and supplies at tax time and you'll pay income tax on money you never kept. (Sourcing mileage is deductible too, on top of this — Guide 02.) This is the entire reason the tracker exists.</p>
+  </section>
+
+  <section>
+    <div class="snum">13</div>
+    <h2>Where to list what</h2>
+    <p class="sub">Cheapest fees aren't always most profit — the right buyers matter more. Fee-adjusted, here's where each category tends to net the most.</p>
+    <div class="mult">
+      <div class="row"><div class="cat">Sneakers &amp; hype<small>authentication + buyer trust pays off</small></div><div class="pick">StockX / GOAT / eBay</div></div>
+      <div class="row"><div class="cat">Streetwear &amp; designer<small>low fees, right audience</small></div><div class="pick">Grailed / Depop</div></div>
+      <div class="row"><div class="cat">Everyday clothing<small>volume game, keep fees low</small></div><div class="pick">Vinted / Mercari</div></div>
+      <div class="row"><div class="cat">Electronics &amp; big-ticket<small>avoid the % cut entirely</small></div><div class="pick">Facebook / Local</div></div>
+      <div class="row"><div class="cat">Trading cards &amp; collectibles<small>live-sell premium</small></div><div class="pick">Whatnot / eBay</div></div>
+      <div class="row"><div class="cat">Tickets<small>fees eat margin — price for them</small></div><div class="pick">eBay / StubHub</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="snum">14</div>
+    <h2>Sales tax: what you actually pay</h2>
+    <p>Good news first: in almost every US state, the <strong>marketplace collects and remits sales tax for you</strong> (it's called marketplace facilitator law). The buyer pays it at checkout, the platform sends it to the state. It is <em>not</em> a cost that comes out of your pocket, and it's not your profit.</p>
+    <p class="sub">What you <strong>do</strong> owe is <strong>income tax on your profit</strong> — sale price minus what you paid minus your fees and expenses. That's a completely different thing, and it's where most resellers overpay by not tracking their costs. Platforms may send you a <span class="mono">1099-K</span>; as of 2025–26 the federal reporting threshold is back up to <strong>$20,000 and 200+ transactions</strong>, though some states are lower — and the threshold only affects <em>reporting</em>, not whether you owe.</p>
+    <p class="note">This is the one that costs people the most, so it gets its own guide → <b>Guide 02: Reseller Tax &amp; Deductions.</b></p>
+  </section>
+
+  <section>
+    <div class="snum">15</div>
+    <h2>Margin rules worth tattooing on your arm</h2>
+    <ul class="clean">
+      <li><b>Aim for 50%+ ROI, not a fixed dollar amount.</b> Flipping $65 into $100 beats flipping $600 into $650 — same $35, far less cash at risk and faster to repeat.</li>
+      <li><b>Cheap items hide fees.</b> A $12 sale can lose 20%+ to flat fees alone. Bundle small items, or sell them where flat fees are low.</li>
+      <li><b>Shipping is a cost, not an afterthought.</b> A $9 label turns a "profit" into a loss on anything under ~$40. Price it in or make the buyer pay.</li>
+      <li><b>Tied-up cash is real.</b> Three items unsold for 60 days is money you can't reinvest. Track days-to-sell, not just profit.</li>
+      <li><b>Track every fee the day it happens.</b> At tax time, every fee you logged is a deduction. Every one you forgot is profit you'll pay tax on.</li>
+      <li><b>Speed beats a few extra dollars.</b> A fast, certain sale at 40% ROI usually beats holding for a "maybe" 60%. Cash that moves compounds.</li>
+    </ul>
+    <p class="note">That fifth rule is why this kit comes with a tracker — fees you don't record become taxable income you didn't actually keep.</p>
+  </section>
+
+  <section>
+    <div class="disclaim">
+      <b>Keep this honest.</b> Marketplace fees, payout timing, and tax thresholds change often and vary by seller level, category, item price, promotions, and state — the numbers here are current-as-of estimates for US sellers, not quotes. Always confirm the live rate on each platform's official fee page before you price an item. Nothing here is financial or tax advice; for your specific situation, talk to a qualified tax professional.
+    </div>
+  </section>
+
+  <div class="foot">
+    MARGIN · FLIP KIT — GUIDE 01 OF 04<br>
+    Fee &amp; Margin Playbook · Fee data compiled Nov 2026 from public marketplace fee pages &amp; seller reporting · Verify before pricing.
+  </div>
+</div>

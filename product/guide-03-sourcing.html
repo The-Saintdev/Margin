@@ -1,0 +1,282 @@
+<title>Sourcing Playbook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Same "Margin" ledger identity: Fraunces headline, mono figures, hairline rules, green/red only on money. */
+:root{
+  --paper:#fbfaf7; --surface:#ffffff; --sunk:#f4f2ec;
+  --ink:#1b1c1e; --muted:#6a6c70; --faint:#9c9ea4;
+  --rule:#e8e5de; --rule-strong:#d7d3c9;
+  --good:#12754a; --good-soft:#e7f0ea; --bad:#b23420; --bad-soft:#f6e9e5; --warn:#8a5a12; --warn-soft:#f3ecdd;
+  --disp:"Fraunces",Georgia,serif; --ui:"Hanken Grotesk",-apple-system,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#141416; --surface:#1b1c1f; --sunk:#232428; --ink:#f1efe9; --muted:#9fa1a7; --faint:#6d6f76;
+  --rule:#2b2c31; --rule-strong:#3a3b41; --good:#44b67c; --good-soft:#15271d; --bad:#e67c66; --bad-soft:#2a1a17; --warn:#d9a847; --warn-soft:#2a2414; color-scheme:dark;
+}
+*{box-sizing:border-box} html,body{margin:0} [hidden]{display:none!important} img{max-width:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--surface)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.pos{color:var(--good)} .neg{color:var(--bad)} .warn{color:var(--warn)}
+h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.band{background:var(--surface);border-bottom:1px solid var(--rule)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+.mast{padding-block:34px 30px}
+.kicker{display:flex;align-items:baseline;gap:9px;margin-bottom:22px}
+.kicker .nm{font-family:var(--disp);font-weight:600;font-size:18px}
+.kicker .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.mast h1{font-size:clamp(32px,7.5vw,50px);line-height:1.02}
+.mast .lede{margin-top:16px;font-size:17px;color:var(--muted);max-width:52ch}
+.mast .meta{margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap}
+
+.toc{padding:18px 0 24px;border-top:1px solid var(--rule)}
+.toc ol{list-style:none;counter-reset:t;margin:0;padding:0;columns:2;column-gap:28px}
+.toc li{counter-increment:t;padding:6px 0;font-size:14px;color:var(--muted);break-inside:avoid}
+.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:var(--faint);margin-right:9px}
+
+section{padding-block:34px} section+section{border-top:1px solid var(--rule)}
+.snum{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:500}
+h2{font-size:clamp(23px,5vw,30px);margin:8px 0 14px;line-height:1.1}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin:0 0 15px;color:var(--ink)} p.sub{color:var(--muted)} strong{font-weight:700} em{font-style:italic}
+.pull{font-family:var(--disp);font-weight:500;font-size:clamp(20px,4.6vw,27px);line-height:1.3;color:var(--ink);margin:6px 0 18px;padding-left:18px;border-left:3px solid var(--good)}
+
+.tablewrap{border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden;background:var(--surface);margin:6px 0 14px}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+thead th{text-align:left;padding:11px 14px;background:var(--sunk);border-bottom:1px solid var(--rule-strong);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;white-space:nowrap}
+th.r,td.r{text-align:right}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:14px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--sunk)}
+.pf{font-weight:600;white-space:nowrap}
+.chip{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.chip.hi{background:var(--good-soft);color:var(--good)} .chip.mid{background:var(--warn-soft);color:var(--warn)} .chip.lo{background:var(--sunk);color:var(--muted)}
+.note{font-size:12.5px;color:var(--faint);line-height:1.55;margin:0 0 15px}
+.caption{font-size:12.5px;color:var(--faint);margin:0 0 8px}
+
+.formula{background:var(--sunk);border:1px solid var(--rule);border-radius:8px;padding:20px 22px;margin:8px 0 16px}
+.formula .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:10px}
+.formula .eq{font-family:var(--mono);font-size:clamp(15px,3.6vw,19px);line-height:1.6;color:var(--ink)}
+.formula .eq b{color:var(--good);font-weight:700}
+
+ul.clean{list-style:none;padding:0;margin:4px 0 16px}
+ul.clean li{padding:10px 0 10px 26px;border-bottom:1px solid var(--rule);position:relative;color:var(--muted)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"";position:absolute;left:4px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--good)}
+ul.clean li b{color:var(--ink)}
+ul.bad li::before{background:var(--bad)}
+
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:6px 0 14px}
+ol.steps li{counter-increment:s;padding:11px 0 11px 42px;border-bottom:1px solid var(--rule);position:relative;color:var(--muted)}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;font-weight:600;display:grid;place-items:center}
+ol.steps li b{color:var(--ink)}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 14px}
+.colcard{border:1px solid var(--rule);border-radius:9px;padding:16px 18px;background:var(--surface)}
+.colcard h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px}
+.colcard.win h3{color:var(--good)} .colcard.avoid h3{color:var(--bad)}
+.colcard ul{list-style:none;margin:0;padding:0}
+.colcard li{font-size:13.5px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--rule)}
+.colcard li:last-child{border-bottom:none}
+.colcard li b{color:var(--ink);font-weight:600}
+
+.disclaim{background:var(--sunk);border:1px solid var(--rule);border-radius:8px;padding:16px 18px;font-size:13.5px;color:var(--muted);line-height:1.6}
+.disclaim b{color:var(--ink)}
+.foot{padding-block:28px 60px;font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:560px){ .toc ol{columns:1} .cols{grid-template-columns:1fr} }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<div class="band"><div class="wrap">
+  <div class="mast">
+    <div class="kicker"><span class="nm">Margin</span><span class="tag">Flip Kit · Guide 03</span></div>
+    <div class="eyebrow">The Sourcing Playbook</div>
+    <h1>You make your money when you buy — not when you sell.</h1>
+    <p class="lede">Where to find inventory that actually profits, the 30-second check that kills bad buys before you make them, what holds value and what to avoid, and a sourcing routine you can repeat every week.</p>
+    <div class="meta"><span>Updated Nov 2026</span><span>Beginner → intermediate</span><span>~16 min read</span></div>
+    <div class="toc"><ol>
+      <li>Your profit is set at the buy</li>
+      <li>The 30-second sourcing check</li>
+      <li>Sell-through beats "it's worth a lot"</li>
+      <li>Where to source, ranked</li>
+      <li>What holds value — and what doesn't</li>
+      <li>The spot-math buy rule</li>
+      <li>Authentication &amp; avoiding fakes</li>
+      <li>Timing &amp; seasonality</li>
+      <li>Rookie mistakes that cost money</li>
+      <li>A repeatable weekly routine</li>
+    </ol></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <section>
+    <div class="snum">01</div>
+    <h2>Your profit is set at the buy</h2>
+    <p>New resellers obsess over selling — better photos, better listings, better prices. That stuff matters at the edges. But the truth the pros know is simpler: <strong>the margin is locked in the moment you buy.</strong> You cannot sell your way out of overpaying.</p>
+    <p class="pull">Discipline at the buy beats hustle at the sale. A great sourcer with mediocre listings still wins. A great seller who overpays loses.</p>
+    <p class="sub">So this guide is mostly about one skill: knowing — before money leaves your hand — whether an item will actually make you money. Everything else is logistics.</p>
+  </section>
+
+  <section>
+    <div class="snum">02</div>
+    <h2>The 30-second sourcing check</h2>
+    <p>Run this on your phone, standing in the aisle, before every buy. If you can't answer all three, put it down.</p>
+    <ol class="steps">
+      <li><b>What did it actually SELL for?</b> Not the asking price — the <em>sold</em> price. On eBay, filter to "Sold items." On sneakers, check StockX/GOAT last sales. Asking prices are fantasy; sold prices are facts.</li>
+      <li><b>How often does it sell?</b> Look at how many sold recently vs how many are listed. Ten sold this month and five listed = liquid. Two sold this year and 90 listed = you'll be holding it forever.</li>
+      <li><b>After fees and my cost, do I keep enough?</b> Run the resale price through the break-even multiplier from Guide 01. If it doesn't clear your target profit, it's not a deal — no matter how "cheap" it feels.</li>
+    </ol>
+    <p class="note"><b>The discipline:</b> "it's only $5" is not a reason to buy. "It sells for $40, moves weekly, and I keep $25 after fees" is. Feelings lose money; comps make it.</p>
+  </section>
+
+  <section>
+    <div class="snum">03</div>
+    <h2>Sell-through beats "it's worth a lot"</h2>
+    <p><strong>Sell-through rate</strong> = how many of a thing sold versus how many are listed, over a period. It's the single most underrated number in reselling, because it tells you whether your money comes <em>back</em>.</p>
+    <p class="sub">A quick way to eyeball it on eBay: compare the count of <em>sold</em> listings to <em>active</em> listings for the same item. Lots sold, few listed → high sell-through → cash moves fast. Few sold, tons listed → you're item #91 in line.</p>
+    <div class="formula">
+      <div class="lbl">Why it matters more than price</div>
+      <div class="eq">$30 profit every <b>week</b>  ≫  $200 profit <b>once a year</b></div>
+    </div>
+    <p class="note">Cash that moves compounds. A fast-selling $30 flip you can repeat 50 times a year makes far more than a prestigious $200 item gathering dust. Chase <em>velocity</em>, not just margin.</p>
+  </section>
+
+  <section>
+    <div class="snum">04</div>
+    <h2>Where to source, ranked</h2>
+    <p class="sub">No single source is "best" — they trade cash, effort, and margin. Start where your time and budget fit, then specialize.</p>
+    <div class="tablewrap"><div class="tscroll"><table>
+      <thead><tr><th>Source</th><th>Best for</th><th>Cash</th><th>Effort</th><th>Margin</th></tr></thead>
+      <tbody>
+        <tr><td class="pf">Thrift stores</td><td>Clothing, vintage, books, brand-name finds</td><td><span class="chip lo">Low</span></td><td><span class="chip mid">High</span></td><td><span class="chip hi">High</span></td></tr>
+        <tr><td class="pf">Garage &amp; estate sales</td><td>Everything — tools, collectibles, electronics</td><td><span class="chip lo">Low</span></td><td><span class="chip mid">High</span></td><td><span class="chip hi">Very high</span></td></tr>
+        <tr><td class="pf">Retail clearance</td><td>New-in-box items at markdown (Target, Ross, TJ Maxx)</td><td><span class="chip mid">Med</span></td><td><span class="chip lo">Low</span></td><td><span class="chip mid">Medium</span></td></tr>
+        <tr><td class="pf">Outlet stores</td><td>New Nike/NB/designer → resell platforms</td><td><span class="chip mid">Med</span></td><td><span class="chip lo">Low</span></td><td><span class="chip mid">Medium</span></td></tr>
+        <tr><td class="pf">FB Marketplace / OfferUp</td><td>Underpriced local electronics, furniture, consoles</td><td><span class="chip mid">Varies</span></td><td><span class="chip mid">Med</span></td><td><span class="chip hi">High</span></td></tr>
+        <tr><td class="pf">Liquidation / pallets</td><td>Bulk volume, returns — advanced</td><td><span class="chip" style="background:var(--bad-soft);color:var(--bad)">High</span></td><td><span class="chip mid">High</span></td><td><span class="chip mid">Variable</span></td></tr>
+        <tr><td class="pf">Auctions / storage units</td><td>High-variance gambles — experienced only</td><td><span class="chip" style="background:var(--bad-soft);color:var(--bad)">High</span></td><td><span class="chip mid">High</span></td><td><span class="chip mid">Variable</span></td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="note"><b>Where to start with little cash:</b> thrift stores and garage/estate sales. Low buy-in, highest margins, and you learn to spot value fast. The flashier sources (pallets, storage units) eat cash and punish beginners — grow into them.</p>
+  </section>
+
+  <section>
+    <div class="snum">05</div>
+    <h2>What holds value — and what doesn't</h2>
+    <p class="sub">Some things reliably resell; some are traps that feel like finds. General patterns — markets shift, so always comp.</p>
+    <div class="cols">
+      <div class="colcard win">
+        <h3>✓ Tends to flip well</h3>
+        <ul>
+          <li><b>Sneakers</b> — Jordan, Nike SB, limited Dunks, New Balance</li>
+          <li><b>Durable brands</b> — Carhartt, Patagonia, The North Face, vintage denim</li>
+          <li><b>Lego</b> — retired sets climb hard</li>
+          <li><b>Trading cards &amp; sealed games</b> — Pokémon, retro consoles</li>
+          <li><b>Power tools</b> — DeWalt, Milwaukee, Snap-on</li>
+          <li><b>Small appliances</b> — Dyson, KitchenAid, espresso machines</li>
+          <li><b>Vintage tees &amp; band merch</b>, designer archive, hype drops</li>
+        </ul>
+      </div>
+      <div class="colcard avoid">
+        <h3>✕ Usually a trap</h3>
+        <ul>
+          <li><b>Fast fashion</b> — Shein, H&amp;M, Forever 21: near-zero resale</li>
+          <li><b>No-name / unbranded</b> anything you can't comp</li>
+          <li><b>Heavily faked items</b> you can't authenticate</li>
+          <li><b>Bulky, low-value</b> goods — shipping eats you alive</li>
+          <li><b>Fast-depreciating tech</b> — last year's cheap phones/tablets</li>
+          <li><b>Saturated items</b> — 200 already listed, few selling</li>
+          <li><b>Damaged goods</b> you "can fix later" (you won't)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">The through-line: brands with demand and scarcity hold value; generic, abundant, or fragile things don't. When in doubt, the sold-listings count tells you the truth.</p>
+  </section>
+
+  <section>
+    <div class="snum">06</div>
+    <h2>The spot-math buy rule</h2>
+    <p>You don't need a calculator in the aisle — you need a ceiling. Work backward from the realistic resale price (from your comps), then cap what you'll pay.</p>
+    <div class="formula">
+      <div class="lbl">Most you should pay</div>
+      <div class="eq">realistic resale × ( 1 − fee% ) − shipping − <b>your target profit</b></div>
+    </div>
+    <p class="sub">Fast rule of thumb for a healthy flip: <strong>pay no more than a third to a half of what it realistically resells for.</strong> A jacket that sells for $60 on a ~13% platform, $9 to ship, $25 target profit → pay at most about <span class="mono">$18</span>. Over that, walk away.</p>
+    <p class="note">This is the same break-even math as Guide 01, just run in reverse — resale first, costs out, and whatever's left is your hard ceiling. Write your ceiling before you negotiate, and hold it.</p>
+  </section>
+
+  <section>
+    <div class="snum">07</div>
+    <h2>Authentication &amp; avoiding fakes</h2>
+    <p>Sneakers, designer, trading cards, and electronics are flooded with convincing fakes. Selling one — even unknowingly — gets you banned and refunded. Protect yourself:</p>
+    <ul class="clean">
+      <li><b>Learn one category deeply</b> before you spend real money in it. Know the tells: stitching, tags, box labels, weight, fonts.</li>
+      <li><b>Use authenticated platforms</b> (StockX, GOAT) for hype items — they verify before the buyer gets it. You pay more in fees for that protection; often worth it.</li>
+      <li><b>If you're not sure, it's a no.</b> A passed-up real item costs nothing. A fake costs your money, your account, and your rep.</li>
+      <li><b>Keep proof of purchase</b> for anything high-value — receipts settle disputes.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="snum">08</div>
+    <h2>Timing &amp; seasonality</h2>
+    <p class="sub">The same item is worth different amounts in different months. Buy when nobody wants it, sell when everybody does.</p>
+    <ul class="clean">
+      <li><b>Buy off-season, sell in-season.</b> Coats and boots: buy in spring, sell in fall. Grills and patio: buy in fall, sell in spring.</li>
+      <li><b>Holidays spike demand.</b> Toys, collectibles, and gifts peak Oct–Dec. Costumes spike before Halloween.</li>
+      <li><b>Hype drops have a clock.</b> Sneaker and streetwear resale is hottest right after a sold-out drop, then cools. Move fast.</li>
+      <li><b>Tax-refund season (Feb–Apr)</b> puts cash in buyers' pockets — big-ticket items move better.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="snum">09</div>
+    <h2>Rookie mistakes that cost money</h2>
+    <ul class="clean bad">
+      <li><b>Buying off the asking price,</b> not the sold price. The #1 beginner mistake.</li>
+      <li><b>Emotional buys</b> — "this is so cool" is not "this will sell."</li>
+      <li><b>Ignoring fees and shipping</b> until the sale, then realizing you lost money.</li>
+      <li><b>Hoarding slow sellers</b> — cash tied up in dead inventory can't buy winners.</li>
+      <li><b>Going high-ticket with no cushion</b> — one $600 flip that won't sell can freeze your whole operation.</li>
+      <li><b>Not listing fast.</b> An item in a pile earns nothing. Source it, list it within 48 hours, log it.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="snum">10</div>
+    <h2>A repeatable weekly routine</h2>
+    <p class="sub">Winning resellers aren't lucky — they run a loop. Here's a simple one:</p>
+    <ol class="steps">
+      <li><b>Set a sourcing budget</b> you can afford to tie up — and stick to it.</li>
+      <li><b>Source on a schedule</b> — pick your sources and go weekly, not randomly.</li>
+      <li><b>Run the 30-second check on every item.</b> Comp, sell-through, margin. No comp, no buy.</li>
+      <li><b>List within 48 hours</b> — and log every buy in the tracker so you always know your real numbers.</li>
+      <li><b>Reinvest profit, not rent.</b> Roll winnings back into inventory; take out only what's yours to keep.</li>
+      <li><b>Niche down</b> to what you know best — depth in one category beats dabbling in ten.</li>
+    </ol>
+    <p class="note">Every buy you log in Margin sharpens the next one: you'll see which categories, sources, and price points actually profit for <em>you</em> — and double down on them.</p>
+  </section>
+
+  <section>
+    <div class="disclaim">
+      <b>A note on expectations.</b> Resale markets shift constantly — what flips well this year may cool next year, and prices vary by region and season. Everything here is general guidance to build judgment, not a guarantee of profit. Always verify current sold prices before you buy, and start small while you learn a category.
+    </div>
+  </section>
+
+  <div class="foot">
+    MARGIN · FLIP KIT — GUIDE 03 OF 04<br>
+    The Sourcing Playbook · General reselling strategy · Markets vary — always confirm live comps before buying.
+  </div>
+</div>
